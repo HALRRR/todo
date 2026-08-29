@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>🌌 登录 · 学习与减脂计划</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌌%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f5f3fd;
+    --bg-grad-1:#e7ddff;
+    --bg-grad-2:#ffe7f4;
+    --bg-grad-3:#dcedff;
+    --star:rgba(109,77,208,.35);
+    --star-2:rgba(56,189,248,.32);
+    --sky-opacity:.65;
+    --card:#fffdfa;
+    --text:#3b3450;
+    --text-soft:#7a7290;
+    --text-light:#a9a2bd;
+    --border:#e8e0f2;
+    --primary:#7c3aed;
+    --primary-soft:#f3e8ff;
+    --primary-dark:#6d28d9;
+    --danger:#dc2626;
+    --danger-soft:#fee2e2;
+    --shadow:0 1px 3px rgba(80,50,120,.08),0 4px 16px rgba(80,50,120,.06);
+    --shadow-lg:0 12px 40px rgba(124,58,237,.16);
+    --radius:14px;
+    --radius-sm:12px;
+  }
+  html[data-theme="dark"]{
+    --bg:#141126;
+    --bg-grad-1:#251d4a;
+    --bg-grad-2:#3a2050;
+    --bg-grad-3:#1a2140;
+    --star:rgba(228,220,255,.85);
+    --star-2:rgba(147,197,253,.7);
+    --sky-opacity:1;
+    --card:#221c3c;
+    --text:#f0eafd;
+    --text-soft:#b5add4;
+    --text-light:#81799f;
+    --border:#3a3260;
+    --primary:#a78bfa;
+    --primary-soft:#2f2856;
+    --primary-dark:#c4b5fd;
+    --danger:#f87171;
+    --danger-soft:#3b1d2a;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+    --shadow-lg:0 12px 40px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    color:var(--text);
+    /* 星空治愈风底色：星云柔光 + 细碎星点 */
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(1000px 560px at 85% -10%, var(--bg-grad-1), transparent 60%),
+      radial-gradient(900px 520px at -8% 22%, var(--bg-grad-2), transparent 55%),
+      radial-gradient(820px 480px at 55% 112%, var(--bg-grad-3), transparent 60%),
+      radial-gradient(circle, var(--star) 1px, transparent 1.4px);
+    background-size:auto,auto,auto,110px 110px;
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    line-height:1.6;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    transition:background-color .3s ease;
+  }
+
+  /* ---- 星空装饰层 ---- */
+  .sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .starfield{position:absolute;inset:-20px}
+  .starfield.f1{
+    background-image:
+      radial-gradient(1.5px 1.5px at 25px 35px, var(--star), transparent 60%),
+      radial-gradient(1px 1px at 125px 95px, var(--star), transparent 60%),
+      radial-gradient(1.2px 1.2px at 195px 175px, var(--star-2), transparent 60%),
+      radial-gradient(.9px .9px at 75px 155px, var(--star), transparent 60%);
+    background-size:230px 200px;
+    animation:twinkle 5s ease-in-out infinite alternate;
+  }
+  .starfield.f2{
+    background-image:
+      radial-gradient(1.1px 1.1px at 60px 40px, var(--star-2), transparent 60%),
+      radial-gradient(1.4px 1.4px at 160px 130px, var(--star), transparent 60%),
+      radial-gradient(.8px .8px at 220px 60px, var(--star), transparent 60%);
+    background-size:320px 280px;
+    animation:twinkle 7s ease-in-out infinite alternate-reverse;
+  }
+  .starfield.f3{
+    background-image:
+      radial-gradient(2px 2px at 90px 70px, var(--star), transparent 60%),
+      radial-gradient(1.6px 1.6px at 300px 210px, var(--star-2), transparent 60%);
+    background-size:520px 460px;
+    animation:twinkle 9s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle{from{opacity:calc(var(--sky-opacity)*.4)}to{opacity:var(--sky-opacity)}}
+  .sky-moon,.sky-sun{position:absolute;top:7%;right:9%;font-size:48px;animation:skyFloat 8s ease-in-out infinite alternate}
+  .sky-moon{filter:drop-shadow(0 0 22px rgba(255,236,170,.55))}
+  .sky-sun{filter:drop-shadow(0 0 20px rgba(255,200,120,.5))}
+  html[data-theme="dark"] .sky-sun{display:none}
+  html:not([data-theme="dark"]) .sky-moon{display:none}
+  .sky-cloud{position:absolute;font-size:32px;opacity:.55;animation:skyFloat 11s ease-in-out infinite alternate}
+  .sky-cloud.c1{top:14%;left:6%}
+  .sky-cloud.c2{top:30%;left:80%;font-size:24px;animation-delay:2.5s}
+  html[data-theme="dark"] .sky-cloud{opacity:.15}
+  .meteor{
+    position:absolute;top:12%;left:56%;width:2px;height:2px;border-radius:50%;
+    background:#fff;box-shadow:0 0 8px 2px rgba(255,255,255,.9);opacity:0;
+    animation:meteor 8s linear infinite;
+  }
+  .meteor::before{
+    content:"";position:absolute;top:0;right:0;width:110px;height:1.5px;
+    transform-origin:right top;transform:rotate(38deg);
+    background:linear-gradient(270deg,rgba(255,255,255,.95),transparent);
+  }
+  html:not([data-theme="dark"]) .meteor{display:none}
+  @keyframes meteor{
+    0%,88%{opacity:0;transform:translate3d(0,0,0)}
+    90%{opacity:1}
+    98%{opacity:.85}
+    100%{opacity:0;transform:translate3d(-320px,250px,0)}
+  }
+  @keyframes skyFloat{from{transform:translateY(0)}to{transform:translateY(14px)}}
+  @media (prefers-reduced-motion:reduce){
+    .starfield,.meteor,.sky-moon,.sky-sun,.sky-cloud{animation:none}
+  }
+
+  .login-card{
+    position:relative;z-index:1;
+    width:100%;max-width:400px;
+    background:var(--card);
+    border-radius:22px;
+    box-shadow:var(--shadow-lg);
+    padding:38px 32px 28px;
+    border:1.5px solid var(--border);
+    transition:background-color .3s ease,border-color .3s ease;
+  }
+
+  /* ---- 卡片顶部星光描边 ---- */
+  .login-card::before{
+    content:"";position:absolute;top:0;left:24px;right:24px;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,var(--primary),#f0abfc,var(--primary),transparent);
+    opacity:.5;pointer-events:none;
+  }
+
+  /* ---- 卡片贴纸 emoji ---- */
+  .sticker{
+    position:absolute;user-select:none;pointer-events:none;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.15));
+  }
+  .sticker.s1{top:-18px;right:-13px;font-size:26px;transform:rotate(14deg)}
+  .sticker.s2{bottom:-15px;left:-12px;font-size:22px;transform:rotate(-12deg)}
+  .sticker.s3{bottom:-12px;right:26px;font-size:18px;transform:rotate(8deg)}
+
+  /* ---- 深色模式开关（贴纸风按钮）---- */
+  .theme-toggle{
+    position:absolute;top:14px;right:14px;z-index:5;
+    width:38px;height:38px;border-radius:50%;
+    border:1.5px dashed var(--text-light);
+    background:var(--card);
+    cursor:pointer;font-size:17px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--shadow);
+    transition:transform .18s ease,border-color .18s ease;
+  }
+  .theme-toggle:hover{transform:rotate(24deg) scale(1.1);border-color:var(--primary)}
+
+  .logo-wrap{text-align:center;margin-bottom:20px}
+  .logo-icon{
+    width:60px;height:60px;margin:0 auto 14px;
+    background:linear-gradient(135deg,#6d5bd0,#8b5cf6 55%,#c084fc);
+    color:#fff;border-radius:18px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;font-weight:700;
+    box-shadow:0 8px 20px rgba(124,58,237,.32);
+    /* 贴纸感：白色描边 + 微倾斜 */
+    border:3px solid #fff;
+    transform:rotate(-4deg);
+    transition:transform .2s ease;
+  }
+  .logo-icon:hover{transform:rotate(4deg) scale(1.05)}
+  .logo-wrap h1{font-size:21px;font-weight:700;margin-bottom:6px}
+  .logo-wrap h1 .h-emoji{font-size:19px;margin-left:4px}
+  .logo-wrap p{font-size:13px;color:var(--text-soft)}
+
+  /* Tab 切换器 */
+  .seg{
+    display:flex;gap:4px;
+    background:var(--primary-soft);
+    border-radius:999px;
+    padding:4px;margin-bottom:22px;
+    transition:background-color .3s ease;
+  }
+  .seg button{
+    flex:1;padding:9px 12px;
+    font-size:14px;font-weight:500;font-family:inherit;
+    color:var(--text-soft);background:transparent;
+    border:none;border-radius:999px;cursor:pointer;
+    transition:all .18s ease;
+  }
+  .seg button.active{
+    background:#fff;color:#6d28d9;
+    box-shadow:0 2px 6px rgba(124,58,237,.14);
+    font-weight:600;
+  }
+  html[data-theme="dark"] .seg button.active{background:#3a3160;color:#d6c9ff;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+
+  .form-group{margin-bottom:16px}
+  .form-group label{
+    display:block;font-size:13px;font-weight:500;
+    color:var(--text);margin-bottom:8px;
+  }
+  .input-wrap{position:relative}
+  .input-wrap .prefix{
+    position:absolute;left:14px;top:50%;transform:translateY(-50%);
+    color:var(--text-light);font-size:15px;pointer-events:none;
+    transition:color .18s ease;
+  }
+  .form-group input{
+    width:100%;
+    padding:13px 16px 13px 44px;
+    font-size:15px;
+    font-family:inherit;
+    color:var(--text);
+    background:#fff;
+    border:1.5px solid var(--border);
+    border-radius:var(--radius-sm);
+    outline:none;
+    box-shadow:0 1px 2px rgba(0,0,0,.03);
+    transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+  }
+  html[data-theme="dark"] .form-group input{background:#1c1531}
+  .form-group input::placeholder{color:var(--text-light)}
+  .form-group input:hover:not(:focus):not(.error){
+    border-color:#c4b5fd;
+  }
+  .form-group input:focus{
+    border-color:var(--primary);
+    background:#fff;
+    box-shadow:0 0 0 4px rgba(124,58,237,.14);
+  }
+  html[data-theme="dark"] .form-group input:focus{background:#1c1531}
+  .input-wrap:focus-within .prefix{color:var(--primary)}
+  .form-group input.error{
+    border-color:var(--danger);
+    background:#fffafa;
+    box-shadow:0 0 0 4px rgba(220,38,38,.08);
+  }
+  html[data-theme="dark"] .form-group input.error{background:#2b1622}
+
+  .error-msg{
+    margin-top:8px;font-size:12px;color:var(--danger);
+    display:none;align-items:center;gap:4px;
+  }
+  .error-msg.show{display:flex}
+
+  .tip{
+    font-size:12px;color:var(--text-soft);
+    background:var(--primary-soft);
+    border:1px dashed var(--primary);
+    padding:9px 12px;border-radius:10px;
+    margin-bottom:16px;
+    display:flex;align-items:center;gap:6px;line-height:1.5;
+    transition:background-color .3s ease,border-color .3s ease;
+  }
+  .tip b{color:var(--primary-dark);font-weight:600}
+
+  .btn-primary{
+    width:100%;
+    padding:13px 20px;
+    font-size:15px;font-weight:600;
+    font-family:inherit;
+    color:#fff;
+    background:linear-gradient(135deg,#8b5cf6,#7c3aed);
+    border:none;border-radius:var(--radius-sm);
+    cursor:pointer;
+    box-shadow:0 6px 16px rgba(124,58,237,.32);
+    transition:all .18s ease;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .btn-primary:hover:not(:disabled){
+    transform:translateY(-1px);
+    box-shadow:0 8px 22px rgba(124,58,237,.42);
+    background:linear-gradient(135deg,#9d6ef8,#8b5cf6);
+  }
+  .btn-primary:active:not(:disabled){transform:translateY(0)}
+  .btn-primary:disabled{
+    opacity:.65;cursor:not-allowed;
+    box-shadow:none;
+  }
+  .btn-primary .spinner{
+    width:16px;height:16px;
+    border:2px solid rgba(255,255,255,.35);
+    border-top-color:#fff;border-radius:50%;
+    animation:spin .7s linear infinite;
+    display:none;
+  }
+  .btn-primary.loading .spinner{display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .footer-note{
+    text-align:center;margin-top:20px;
+    font-size:12px;color:var(--text-light);
+  }
+  .quick-login{
+    margin-top:14px;padding-top:14px;
+    border-top:1px dashed var(--border);
+  }
+  .quick-login-label{
+    font-size:11px;color:var(--text-light);text-align:center;margin-bottom:8px;
+  }
+  .quick-user{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 12px;margin-bottom:6px;
+    background:#fff;border:1.5px solid var(--border);
+    border-radius:var(--radius-sm);cursor:pointer;
+    transition:all .15s;font-size:13px;
+  }
+  html[data-theme="dark"] .quick-user{background:#1c1531}
+  .quick-user:hover{background:var(--primary-soft);border-color:var(--primary);transform:translateX(3px)}
+  .quick-user .qu-name{font-weight:500;color:var(--text)}
+  .quick-user .qu-meta{font-size:11px;color:var(--text-light)}
+  .quick-user .qu-go{color:var(--primary);font-size:14px}
+
+  /* ============ 手机端适配 ============ */
+  @media (max-width:480px){
+    body{padding:12px}
+    .login-card{padding:30px 22px 22px;border-radius:20px}
+    .logo-icon{width:54px;height:54px;font-size:26px;border-radius:16px}
+    .logo-wrap h1{font-size:20px}
+    .logo-wrap p{font-size:12px}
+    .form-group input{padding:13px 14px 13px 40px;font-size:16px} /* ≥16px 防 iOS 缩放 */
+    .form-group .prefix{left:12px;font-size:14px}
+    .seg button{padding:10px 10px;font-size:13px}
+    .btn-primary{padding:14px 20px;font-size:16px}
+    .tip{font-size:11px;padding:10px 12px}
+    .footer-note{font-size:11px}
+    .quick-user{padding:10px 12px}
+    .sticker.s2,.sticker.s3{display:none} /* 小屏收起外侧贴纸防溢出 */
+    .sky-moon,.sky-sun{font-size:38px;right:7%}
+  }
+  @media (max-width:360px){
+    .login-card{padding:26px 18px 20px}
+    .logo-wrap{margin-bottom:16px}
+  }
+</style>
+<script>
+/* 提前应用主题，避免深色模式闪白 */
+(function(){try{var t=localStorage.getItem('todolist_theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();
+</script>
+</head>
+<body>
+  <!-- 星空治愈风装饰层（纯装饰，不阻挡点击） -->
+  <div class="sky" aria-hidden="true">
+    <div class="starfield f1"></div>
+    <div class="starfield f2"></div>
+    <div class="starfield f3"></div>
+    <span class="sky-sun">🌤</span>
+    <span class="sky-moon">🌙</span>
+    <span class="meteor"></span>
+    <span class="sky-cloud c1">☁️</span>
+    <span class="sky-cloud c2">☁️</span>
+  </div>
+
+  <div class="login-card">
+    <!-- 贴纸装饰 -->
+    <span class="sticker s1">✨</span>
+    <span class="sticker s2">⭐</span>
+    <span class="sticker s3">🌙</span>
+
+    <!-- 深色模式开关 -->
+    <button type="button" class="theme-toggle" id="themeToggle" title="切换深色 / 浅色模式">🌙</button>
+
+    <div class="logo-wrap">
+      <div class="logo-icon">🌙</div>
+      <h1><span id="cardTitle">欢迎回来</span><span class="h-emoji" id="cardEmoji">🌌</span></h1>
+      <p id="cardSubtitle">登录以访问你的学习与减脂计划</p>
+    </div>
+
+    <!-- Tab 切换器 -->
+    <div class="seg" role="tablist">
+      <button type="button" id="tabLogin" class="active" onclick="switchMode('login')">登 录</button>
+      <button type="button" id="tabRegister" onclick="switchMode('register')">注 册</button>
+    </div>
+
+    <!-- ============ 登录表单 ============ -->
+    <form id="loginForm" autocomplete="on" novalidate>
+      <div class="tip">
+        💡 演示账号：<b>admin</b> / 密码 <b>123456</b>（或注册你自己的账号）
+      </div>
+
+      <div class="form-group">
+        <label for="loginUser">用户名</label>
+        <div class="input-wrap">
+          <span class="prefix">👤</span>
+          <input id="loginUser" name="username" type="text" placeholder="请输入用户名"
+                 autocomplete="username" maxlength="32" />
+        </div>
+        <div class="error-msg" id="errLoginUser">⚠ 请输入用户名</div>
+        <div class="error-msg" id="errLoginCreds">⚠ 用户名或密码错误</div>
+      </div>
+
+      <div class="form-group">
+        <label for="loginPass">密码</label>
+        <div class="input-wrap">
+          <span class="prefix">🔒</span>
+          <input id="loginPass" name="password" type="password" placeholder="请输入密码"
+                 autocomplete="current-password" maxlength="64" />
+        </div>
+        <div class="error-msg" id="errLoginPass">⚠ 请输入密码</div>
+      </div>
+
+      <button type="submit" class="btn-primary" id="btnLogin">
+        <span class="spinner"></span>
+        <span class="btn-text">登 录</span>
+      </button>
+
+      <!-- 演示账号快速登录 -->
+      <div class="quick-login" id="quickLogin">
+        <div class="quick-login-label">— 已注册账号，点击快速登录 —</div>
+        <div id="quickList"></div>
+      </div>
+    </form>
+
+    <!-- ============ 注册表单 ============ -->
+    <form id="registerForm" autocomplete="on" novalidate style="display:none">
+      <div class="tip">
+        💡 注册后你将拥有独立的学习计划与减脂计划数据，与其他用户完全隔离
+      </div>
+
+      <div class="form-group">
+        <label for="regUser">用户名</label>
+        <div class="input-wrap">
+          <span class="prefix">👤</span>
+          <input id="regUser" type="text" placeholder="3-20 位字母/数字/下划线"
+                 autocomplete="username" maxlength="20" />
+        </div>
+        <div class="error-msg" id="errRegUser">⚠ 用户名需为 3-20 位字母、数字或下划线</div>
+        <div class="error-msg" id="errRegUserTaken">⚠ 该用户名已被注册</div>
+      </div>
+
+      <div class="form-group">
+        <label for="regNick">昵称（可选）</label>
+        <div class="input-wrap">
+          <span class="prefix">✨</span>
+          <input id="regNick" type="text" placeholder="如：小明，留空则用用户名"
+                 maxlength="20" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="regPass">密码</label>
+        <div class="input-wrap">
+          <span class="prefix">🔒</span>
+          <input id="regPass" type="password" placeholder="至少 6 位"
+                 autocomplete="new-password" maxlength="64" />
+        </div>
+        <div class="error-msg" id="errRegPass">⚠ 密码至少 6 位</div>
+      </div>
+
+      <div class="form-group">
+        <label for="regPass2">确认密码</label>
+        <div class="input-wrap">
+          <span class="prefix">🔐</span>
+          <input id="regPass2" type="password" placeholder="再次输入密码"
+                 autocomplete="new-password" maxlength="64" />
+        </div>
+        <div class="error-msg" id="errRegPass2">⚠ 两次密码不一致</div>
+      </div>
+
+      <button type="submit" class="btn-primary" id="btnRegister">
+        <span class="spinner"></span>
+        <span class="btn-text">注 册 并 登 录</span>
+      </button>
+    </form>
+
+    <div class="footer-note">
+      🔒 数据保存在本地浏览器，不同账号完全独立；关闭浏览器登录态自动失效
+    </div>
+  </div>
+
+<script>
+/* ============================================================
+ * 多用户管理（纯前端 demo，明文存储 — 请勿用于真实敏感场景）
+ *   localStorage.todolist_users = { username: {pass, nick, createdAt} }
+ *   localStorage.todolist_theme = 'light' | 'dark'
+ *   sessionStorage: isLoggedIn / loginUser / loginNick / loginAt
+ * ============================================================ */
+
+var USERS_KEY = 'todolist_users';
+
+/* ---- 深色模式切换 ---- */
+var THEME_KEY = 'todolist_theme';
+var themeToggle = document.getElementById('themeToggle');
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  themeToggle.textContent = (t === 'dark') ? '☀️' : '🌙';
+}
+applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+themeToggle.addEventListener('click', function(){
+  var next = (document.documentElement.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+  applyTheme(next);
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+});
+
+/* ---- 用户表读写 ---- */
+function loadUsers(){
+  try{
+    var raw = localStorage.getItem(USERS_KEY);
+    var obj = raw ? JSON.parse(raw) : null;
+    if(!obj || typeof obj !== 'object' || Array.isArray(obj)){
+      obj = {};
+    }
+    // 首次访问：预置演示账号 admin / 123456
+    if(!obj.admin){
+      obj.admin = { pass:'123456', nick:'管理员', createdAt:Date.now() };
+      saveUsers(obj);
+    }
+    return obj;
+  }catch(e){
+    return { admin:{ pass:'123456', nick:'管理员', createdAt:Date.now() } };
+  }
+}
+function saveUsers(obj){ localStorage.setItem(USERS_KEY, JSON.stringify(obj)); }
+
+/* ---- 已登录则直接跳走 ---- */
+if(sessionStorage.getItem('isLoggedIn') === '1'){
+  goNext();
+}
+
+/* ---- DOM 引用 ---- */
+var tabLogin     = document.getElementById('tabLogin');
+var tabRegister  = document.getElementById('tabRegister');
+var loginForm    = document.getElementById('loginForm');
+var registerForm = document.getElementById('registerForm');
+var cardTitle    = document.getElementById('cardTitle');
+var cardSubtitle = document.getElementById('cardSubtitle');
+var cardEmoji    = document.getElementById('cardEmoji');
+var quickLogin   = document.getElementById('quickLogin');
+var quickList    = document.getElementById('quickList');
+
+/* 登录表单字段 */
+var loginUserInp = document.getElementById('loginUser');
+var loginPassInp = document.getElementById('loginPass');
+var btnLogin     = document.getElementById('btnLogin');
+var btnLoginTxt  = btnLogin.querySelector('.btn-text');
+var errLoginUser  = document.getElementById('errLoginUser');
+var errLoginCreds = document.getElementById('errLoginCreds');
+var errLoginPass  = document.getElementById('errLoginPass');
+
+/* 注册表单字段 */
+var regUserInp = document.getElementById('regUser');
+var regNickInp = document.getElementById('regNick');
+var regPassInp = document.getElementById('regPass');
+var regPass2Inp= document.getElementById('regPass2');
+var btnRegister    = document.getElementById('btnRegister');
+var btnRegisterTxt = btnRegister.querySelector('.btn-text');
+var errRegUser      = document.getElementById('errRegUser');
+var errRegUserTaken = document.getElementById('errRegUserTaken');
+var errRegPass      = document.getElementById('errRegPass');
+var errRegPass2     = document.getElementById('errRegPass2');
+
+/* ---- Tab 切换 ---- */
+function switchMode(mode){
+  if(mode === 'register'){
+    tabLogin.classList.remove('active');
+    tabRegister.classList.add('active');
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'block';
+    cardTitle.textContent = '创建账号';
+    cardEmoji.textContent = '✨';
+    cardSubtitle.textContent = '注册一个属于你的独立空间';
+    hideAllErrors();
+    setTimeout(function(){ regUserInp.focus(); }, 30);
+  }else{
+    tabRegister.classList.remove('active');
+    tabLogin.classList.add('active');
+    registerForm.style.display = 'none';
+    loginForm.style.display = 'block';
+    cardTitle.textContent = '欢迎回来';
+    cardEmoji.textContent = '🌌';
+    cardSubtitle.textContent = '登录以访问你的学习与减脂计划';
+    hideAllErrors();
+    setTimeout(function(){ loginUserInp.focus(); }, 30);
+  }
+}
+window.switchMode = switchMode;
+
+function hideAllErrors(){
+  [errLoginUser, errLoginCreds, errLoginPass,
+   errRegUser, errRegUserTaken, errRegPass, errRegPass2].forEach(function(el){
+    el.classList.remove('show');
+  });
+  [loginUserInp, loginPassInp, regUserInp, regPassInp, regPass2Inp].forEach(function(el){
+    el.classList.remove('error');
+  });
+}
+
+[loginUserInp, loginPassInp, regUserInp, regNickInp, regPassInp, regPass2Inp].forEach(function(el){
+  el.addEventListener('input', hideAllErrors);
+});
+
+/* ---- 渲染已注册账号的快速登录列表 ---- */
+function renderQuickList(){
+  var users = loadUsers();
+  var names = Object.keys(users).sort();
+  if(names.length === 0){
+    quickLogin.style.display = 'none';
+    return;
+  }
+  quickLogin.style.display = 'block';
+  quickList.innerHTML = names.map(function(name){
+    var u = users[name];
+    var display = (u.nick && u.nick !== name) ? (u.nick + '（' + name + '）') : name;
+    return '<div class="quick-user" onclick="quickFill(\'' + escapeJs(name) + '\')">' +
+             '<span><span class="qu-name">' + escapeHtml(display) + '</span></span>' +
+             '<span class="qu-meta">点击登录 →</span>' +
+           '</div>';
+  }).join('');
+}
+function quickFill(name){
+  loginUserInp.value = name;
+  loginPassInp.focus();
+}
+window.quickFill = quickFill;
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, function(m){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+  });
+}
+function escapeJs(s){
+  return String(s).replace(/'/g, "\\'");
+}
+
+/* ---- 登录提交 ---- */
+loginForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  hideAllErrors();
+
+  var u = (loginUserInp.value || '').trim();
+  var p = (loginPassInp.value || '');
+
+  var hasErr = false;
+  if(!u){ errLoginUser.classList.add('show'); loginUserInp.classList.add('error'); hasErr = true; }
+  if(!p){ errLoginPass.classList.add('show'); loginPassInp.classList.add('error'); hasErr = true; }
+  if(hasErr) return;
+
+  btnLogin.classList.add('loading');
+  btnLogin.disabled = true;
+  btnLoginTxt.textContent = '登录中...';
+
+  setTimeout(function(){
+    var users = loadUsers();
+    var rec = users[u];
+    if(rec && rec.pass === p){
+      // 登录成功
+      sessionStorage.setItem('isLoggedIn', '1');
+      sessionStorage.setItem('loginUser', u);
+      sessionStorage.setItem('loginNick', rec.nick || u);
+      sessionStorage.setItem('loginAt', new Date().toISOString());
+      goNext();
+    }else{
+      errLoginCreds.classList.add('show');
+      loginUserInp.classList.add('error');
+      loginPassInp.classList.add('error');
+      btnLogin.classList.remove('loading');
+      btnLogin.disabled = false;
+      btnLoginTxt.textContent = '登 录';
+      loginPassInp.select();
+    }
+  }, 380);
+});
+
+/* ---- 注册提交 ---- */
+registerForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  hideAllErrors();
+
+  var u  = (regUserInp.value || '').trim();
+  var nk = (regNickInp.value || '').trim();
+  var p  = (regPassInp.value || '');
+  var p2 = (regPass2Inp.value || '');
+
+  // 校验
+  var hasErr = false;
+  if(!/^[A-Za-z0-9_]{3,20}$/.test(u)){
+    errRegUser.classList.add('show'); regUserInp.classList.add('error'); hasErr = true;
+  }
+  if(p.length < 6){
+    errRegPass.classList.add('show'); regPassInp.classList.add('error'); hasErr = true;
+  }
+  if(p !== p2){
+    errRegPass2.classList.add('show'); regPass2Inp.classList.add('error'); hasErr = true;
+  }
+  if(hasErr) return;
+
+  // 用户名占用检查
+  var users = loadUsers();
+  if(users[u]){
+    errRegUserTaken.classList.add('show');
+    regUserInp.classList.add('error');
+    return;
+  }
+
+  btnRegister.classList.add('loading');
+  btnRegister.disabled = true;
+  btnRegisterTxt.textContent = '注册中...';
+
+  setTimeout(function(){
+    // 双重检查（防并发）
+    users = loadUsers();
+    if(users[u]){
+      errRegUserTaken.classList.add('show');
+      regUserInp.classList.add('error');
+      btnRegister.classList.remove('loading');
+      btnRegister.disabled = false;
+      btnRegisterTxt.textContent = '注 册 并 登 录';
+      return;
+    }
+    users[u] = {
+      pass: p,
+      nick: nk || u,
+      createdAt: Date.now()
+    };
+    saveUsers(users);
+
+    // 注册成功 → 自动登录
+    sessionStorage.setItem('isLoggedIn', '1');
+    sessionStorage.setItem('loginUser', u);
+    sessionStorage.setItem('loginNick', users[u].nick);
+    sessionStorage.setItem('loginAt', new Date().toISOString());
+    goNext();
+  }, 380);
+});
+
+/* ---- 登录后跳转 ---- */
+function goNext(){
+  var q = new URLSearchParams(window.location.search || '');
+  var next = q.get('next') || 'index.html';
+  // 安全：只允许同目录的 html 文件，可带 hash
+  if(!/^[a-zA-Z0-9_-]+\.html(#[a-zA-Z0-9_-]+)?$/.test(next)){
+    next = 'index.html';
+  }
+  window.location.replace(next);
+}
+
+/* ---- 初始化 ---- */
+renderQuickList();
+setTimeout(function(){ loginUserInp.focus(); }, 30);
+</script>
+</body>
+</html>
